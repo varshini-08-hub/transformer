@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#081321">
+  <title>TransformerGuard | Smart Monitoring</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"><i data-lucide="zap"></i></div><div><strong>Transformer<span>Guard</span></strong><small>GRID INTELLIGENCE</small></div></div>
+    <div class="nav-label">WORKSPACE</div>
+    <nav id="nav">
+      <button class="nav-item active" data-page="overview"><i data-lucide="layout-dashboard"></i>Overview</button>
+      <button class="nav-item" data-page="live"><i data-lucide="activity"></i>Live monitoring</button>
+      <button class="nav-item" data-page="alerts"><i data-lucide="bell-ring"></i>Alerts <b id="alertBadge">0</b></button>
+      <button class="nav-item" data-page="history"><i data-lucide="chart-no-axes-combined"></i>Sensor history</button>
+      <button class="nav-item" data-page="transformer"><i data-lucide="factory"></i>Transformer info</button>
+      <button class="nav-item" data-page="settings"><i data-lucide="settings-2"></i>Settings</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="demo-note"><span class="pulse-dot"></span><div><strong>Simulation environment</strong><small>No physical hardware connected</small></div></div>
+      <div class="user-row"><div class="avatar">TG</div><div><strong>Grid Operator</strong><small>Local workspace</small></div><i data-lucide="chevrons-up-down"></i></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="mobile-brand"><i data-lucide="zap"></i> TransformerGuard</div>
+      <div class="breadcrumb">Workspace <span>/</span> <strong id="pageTitle">Overview</strong></div>
+      <div class="top-actions"><span class="sim-chip"><span class="pulse-dot"></span> SIMULATED DATA</span><span class="connection" id="connection"><span class="dot"></span> Checking connection</span><button class="icon-btn" id="refreshBtn" title="Refresh"><i data-lucide="refresh-cw"></i></button></div>
+    </header>
+
+    <section class="page active" id="page-overview">
+      <div class="welcome-row"><div><div class="eyebrow">MONITORING CENTER <span class="live-pill">● LIVE</span></div><h1>Transformer overview</h1><p class="muted">Monitor simulated electrical conditions and detect abnormal readings.</p></div><div class="date-box"><i data-lucide="calendar-clock"></i><div><small>LOCAL TIME</small><strong id="clock">--</strong></div></div></div>
+      <div class="banner" id="statusBanner"><div class="banner-icon"><i data-lucide="shield-check"></i></div><div><strong id="bannerTitle">Waiting for sensor data</strong><p id="bannerText">Start Wokwi or send a demo reading to begin monitoring.</p></div><span class="status-pill unknown" id="overallStatus">UNKNOWN</span></div>
+      <div class="metric-grid">
+        <article class="metric-card"><div class="metric-head"><span>Voltage</span><span class="metric-icon blue"><i data-lucide="activity"></i></span></div><div class="metric-value"><strong id="voltageValue">—</strong><span>V</span></div><div class="metric-foot"><span id="voltageState" class="mini-state">Waiting for data</span><span class="metric-range">Range 0–300 V</span></div><div class="spark-wrap"><canvas id="voltageSpark"></canvas></div></article>
+        <article class="metric-card"><div class="metric-head"><span>Current</span><span class="metric-icon cyan"><i data-lucide="gauge"></i></span></div><div class="metric-value"><strong id="currentValue">—</strong><span>A</span></div><div class="metric-foot"><span id="currentState" class="mini-state">Waiting for data</span><span class="metric-range">Range 0–20 A</span></div><div class="spark-wrap"><canvas id="currentSpark"></canvas></div></article>
+        <article class="metric-card"><div class="metric-head"><span>Temperature</span><span class="metric-icon orange"><i data-lucide="thermometer"></i></span></div><div class="metric-value"><strong id="temperatureValue">—</strong><span>°C</span></div><div class="metric-foot"><span id="temperatureState" class="mini-state">Waiting for data</span><span class="metric-range">Range 0–150 °C</span></div><div class="spark-wrap"><canvas id="temperatureSpark"></canvas></div></article>
+        <article class="metric-card health-card"><div class="metric-head"><span>Transformer health</span><span class="metric-icon green"><i data-lucide="shield-check"></i></span></div><div class="health-content"><div class="health-ring" id="healthRing"><i data-lucide="shield-check"></i></div><div><strong id="healthValue">UNKNOWN</strong><small id="healthSub">No recent reading</small></div></div><div class="metric-foot"><span class="mini-state" id="healthFoot">Waiting for data</span><span class="metric-range" id="lastUpdate">Last update —</span></div></article>
+      </div>
+      <div class="section-heading"><div><h2>Sensor analytics</h2><p class="muted">Recent values received by the backend</p></div><button class="outline-btn" data-goto="history"><i data-lucide="arrow-up-right"></i> View history</button></div>
+      <div class="chart-grid"><article class="panel chart-panel"><div class="panel-heading"><div><h3>Voltage trend</h3><small>Simulated volts</small></div><span class="chart-dot blue-dot"></span></div><div class="chart-box"><canvas id="voltageChart"></canvas></div></article><article class="panel chart-panel"><div class="panel-heading"><div><h3>Current trend</h3><small>Simulated amperes</small></div><span class="chart-dot cyan-dot"></span></div><div class="chart-box"><canvas id="currentChart"></canvas></div></article><article class="panel chart-panel"><div class="panel-heading"><div><h3>Temperature trend</h3><small>Simulated °C</small></div><span class="chart-dot orange-dot"></span></div><div class="chart-box"><canvas id="temperatureChart"></canvas></div></article></div>
+      <div class="section-heading"><div><h2>Recent alerts</h2><p class="muted">Threshold events detected by the backend</p></div><button class="text-btn" data-goto="alerts">View all alerts <i data-lucide="arrow-right"></i></button></div>
+      <article class="panel"><div class="table-wrap"><table><thead><tr><th>SEVERITY</th><th>ALERT</th><th>MEASURED</th><th>TIME</th><th>STATUS</th></tr></thead><tbody id="recentAlerts"><tr><td colspan="5" class="empty">No alerts yet.</td></tr></tbody></table></div></article>
+    </section>
+
+    <section class="page" id="page-live">
+      <div class="eyebrow">REAL-TIME TELEMETRY</div><h1>Live monitoring</h1><p class="muted page-intro">Latest data from Wokwi or the explicitly labeled demo generator.</p>
+      <div class="banner"><div class="banner-icon"><i data-lucide="radio-tower"></i></div><div><strong id="liveSource">No data source detected</strong><p id="liveSourceText">Send readings to the API to start monitoring.</p></div><span class="status-pill unknown" id="liveStatus">UNKNOWN</span></div>
+      <div class="metric-grid three" id="liveMetrics"></div>
+      <article class="panel"><div class="panel-heading"><div><h3>Latest telemetry packet</h3><small>Validated by the Node.js API</small></div><span class="code-tag">JSON</span></div><pre class="json-view" id="latestJson">Waiting for a reading…</pre></article>
+    </section>
+
+    <section class="page" id="page-alerts">
+      <div class="eyebrow">EVENT MANAGEMENT</div><h1>Alerts & incidents</h1><p class="muted page-intro">Review warning and critical conditions detected from incoming readings.</p>
+      <div class="filter-row"><select id="severityFilter"><option value="">All severities</option><option>CRITICAL</option><option>WARNING</option></select><button class="outline-btn" id="reloadAlerts"><i data-lucide="refresh-cw"></i> Refresh alerts</button></div>
+      <article class="panel"><div class="table-wrap"><table><thead><tr><th>SEVERITY</th><th>TYPE / MESSAGE</th><th>VALUE</th><th>THRESHOLD</th><th>FIRST SEEN</th><th>LAST SEEN</th><th>ACTION</th></tr></thead><tbody id="alertsTable"><tr><td colspan="7" class="empty">No alerts yet.</td></tr></tbody></table></div></article>
+    </section>
+
+    <section class="page" id="page-history">
+      <div class="eyebrow">TELEMETRY ARCHIVE</div><h1>Sensor history</h1><p class="muted page-intro">Explore and export readings saved by your backend.</p>
+      <div class="filter-row"><label>Sensor<select id="historySensor"><option value="">All sensors</option><option value="voltage">Voltage</option><option value="current">Current</option><option value="temperature">Temperature</option></select></label><label>Rows<select id="historyLimit"><option>50</option><option selected>100</option><option>250</option><option>500</option></select></label><button class="outline-btn" id="exportCsv"><i data-lucide="download"></i> Export CSV</button></div>
+      <article class="panel"><div class="panel-heading"><div><h3>Reading history</h3><small id="historyCount">0 records</small></div><span class="code-tag">UTC stored</span></div><div class="table-wrap"><table><thead><tr><th>TIME</th><th>DEVICE</th><th>VOLTAGE</th><th>CURRENT</th><th>TEMPERATURE</th><th>STATUS</th><th>SOURCE</th></tr></thead><tbody id="historyTable"><tr><td colspan="7" class="empty">No readings saved yet.</td></tr></tbody></table></div></article>
+    </section>
+
+    <section class="page" id="page-transformer">
+      <div class="eyebrow">ASSET PROFILE</div><h1>Transformer information</h1><p class="muted page-intro">Edit the demo asset details. Values are descriptive and do not represent a real installation.</p>
+      <form class="panel form-panel" id="transformerForm"><div class="form-grid"><label>Transformer ID<input name="transformerId" required></label><label>Transformer name<input name="transformerName" required></label><label>Location<input name="location" required></label><label>Rated voltage (V)<input name="ratedVoltage" type="number" min="0" step="any" required></label><label>Rated current (A)<input name="ratedCurrent" type="number" min="0" step="any" required></label></div><div class="form-actions"><span class="muted">Stored in local backend settings</span><button class="primary-btn">Save transformer details</button></div></form>
+      <div class="info-callout"><i data-lucide="info"></i><div><strong>Simulation-only project</strong><p>Do not use these demo settings to operate or protect real electrical equipment. Real protection settings must be selected by qualified electrical professionals.</p></div></div>
+    </section>
+
+    <section class="page" id="page-settings">
+      <div class="eyebrow">SYSTEM CONFIGURATION</div><h1>Monitoring settings</h1><p class="muted page-intro">Configure demonstration thresholds used by the rule-based detection engine.</p>
+      <form class="panel form-panel" id="settingsForm"><div class="form-section-title"><i data-lucide="sliders-horizontal"></i><div><h3>Voltage limits</h3><small>Warning band and critical boundaries</small></div></div><div class="form-grid four"><label>Critical low (V)<input name="voltageCriticalLow" type="number" min="0" step="any" required></label><label>Warning low (V)<input name="voltageWarningLow" type="number" min="0" step="any" required></label><label>Warning high (V)<input name="voltageWarningHigh" type="number" min="0" step="any" required></label><label>Critical high (V)<input name="voltageCriticalHigh" type="number" min="0" step="any" required></label></div><div class="form-section-title"><i data-lucide="gauge"></i><div><h3>Current limits</h3><small>Demo amperage thresholds</small></div></div><div class="form-grid"><label>Warning (A)<input name="currentWarning" type="number" min="0" step="any" required></label><label>Critical (A)<input name="currentCritical" type="number" min="0" step="any" required></label></div><div class="form-section-title"><i data-lucide="thermometer"></i><div><h3>Temperature limits</h3><small>Demo temperature thresholds</small></div></div><div class="form-grid"><label>Warning (°C)<input name="temperatureWarning" type="number" min="0" step="any" required></label><label>Critical (°C)<input name="temperatureCritical" type="number" min="0" step="any" required></label></div><div class="form-section-title"><i data-lucide="settings-2"></i><div><h3>Interface preferences</h3><small>Dashboard behavior</small></div></div><div class="form-grid"><label>Refresh interval (ms)<select name="refreshInterval"><option value="2000">2000 ms</option><option value="3000">3000 ms</option><option value="5000">5000 ms</option></select></label><label class="toggle-label">Audible software alerts <input name="audibleAlerts" type="checkbox"></label></div><div class="form-actions"><span class="muted">Defaults are for demonstration only.</span><button class="primary-btn">Save settings</button></div></form>
+    </section>
+
+    <footer class="footer"><span>© 2026 TransformerGuard</span><span><span class="footer-dot"></span> Rule-based demo • No physical transformer connected</span></footer>
+  </main>
+</div>
+<div class="toast-container" id="toasts"></div>
+<script src="/app.js"></script>
+</body>
+</html>
